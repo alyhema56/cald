@@ -310,7 +310,7 @@
     });
   });
 
-  /* Téléchargement PDF */
+  /* Téléchargement PDF - CORRIGÉ POUR L'EN-TÊTE */
   document.getElementById('btnDownload').addEventListener('click', function() {
     var btn = this;
     var element = document.getElementById('calendarPage');
@@ -321,21 +321,33 @@
     var opt = {
       margin: 0,
       filename: 'Calendrier-2027-HBS.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, letterRendering: true, backgroundColor: '#ffffff', logging: false },
+      image: { type: 'jpeg', quality: 1 }, // Qualité maximale
+      html2canvas: { 
+        scale: 3, 
+        useCORS: true, 
+        letterRendering: true, 
+        backgroundColor: '#ffffff', 
+        logging: false,
+        windowWidth: 800, // Force la largeur pour éviter que l'en-tête ne se compresse
+        scrollX: 0,
+        scrollY: 0
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     };
 
-    html2pdf().set(opt).from(element).save().then(function() {
-      btn.disabled = false;
-      btn.innerHTML = "Télécharger en PDF";
-    }).catch(function(err) {
-      console.error(err);
-      btn.disabled = false;
-      btn.innerHTML = "Télécharger en PDF";
-      alert("Erreur lors de la génération du PDF.");
-    });
+    // On laisse 100ms au navigateur pour s'assurer que tout est stable
+    setTimeout(function() {
+      html2pdf().set(opt).from(element).save().then(function() {
+        btn.disabled = false;
+        btn.innerHTML = "Télécharger en PDF";
+      }).catch(function(err) {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = "Télécharger en PDF";
+        alert("Erreur lors de la génération du PDF.");
+      });
+    }, 100);
   });
 </script>
 
